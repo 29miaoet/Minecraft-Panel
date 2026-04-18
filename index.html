@@ -5,9 +5,6 @@
 <meta charset="UTF-8">
 <title>Minecraft Web For Dav</title>
 
-<script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
-
 <style>
 
 /* SIDEBAR HIDE/SHOW */
@@ -430,106 +427,125 @@ img {
 
 </div>
 
-<!-- PYTHON -->
-<script type="text/python">
-from browser import document, window
+<!-- JAVASCRIPT -->
+<script>
+// SIDEBAR NAVIGATION
+function switchPage(ev) {
+    const page = ev.target.getAttribute("data-page");
 
-# SIDEBAR NAVIGATION
-def switch_page(ev):
-    page = ev.target.attrs["data-page"]
+    document.querySelectorAll(".page").forEach(p => {
+        p.classList.remove("active");
+    });
 
-    for p in document.select(".page"):
-        p.classList.remove("active")
+    document.getElementById(page).classList.add("active");
 
-    document[page].classList.add("active")
+    document.querySelectorAll(".nav").forEach(l => {
+        l.classList.remove("active");
+    });
 
-    for l in document.select(".nav"):
-        l.classList.remove("active")
+    ev.target.classList.add("active");
+}
 
-    ev.target.classList.add("active")
+document.querySelectorAll(".nav").forEach(link => {
+    link.addEventListener("click", switchPage);
+});
 
-for link in document.select(".nav"):
-    link.bind("click", switch_page)
 
-# QUICK PAGE SWITCH
-def goPage(page):
-    for p in document.select(".page"):
-        p.classList.remove("active")
+// QUICK PAGE SWITCH
+function goPage(page) {
+    document.querySelectorAll(".page").forEach(p => {
+        p.classList.remove("active");
+    });
 
-    document[page].classList.add("active")
+    document.getElementById(page).classList.add("active");
+}
 
-window.goPage = goPage
+window.goPage = goPage;
 
-# ESSENTIAL MODS LINK
-def openEssentialMods():
-    window.open("https://modrinth.com/mods?categories=performance", "_blank")
 
-window.openEssentialMods = openEssentialMods
+// ESSENTIAL MODS LINK
+function openEssentialMods() {
+    window.open("https://modrinth.com/mods?categories=performance", "_blank");
+}
 
-# COPY BUTTONS
-def copy_text(ev):
-    parent = ev.target.parent
-    text = parent.attrs.get("data-copy")
+window.openEssentialMods = openEssentialMods;
 
-    if text:
-        window.navigator.clipboard.writeText(text)
-        ev.target.text = "Copied!"
 
-        def reset():
-            ev.target.text = "Copy"
+// COPY BUTTONS
+function copyText(ev) {
+    const parent = ev.target.parentElement;
+    const text = parent.getAttribute("data-copy");
 
-        window.setTimeout(reset, 1000)
+    if (text) {
+        navigator.clipboard.writeText(text);
+        ev.target.textContent = "Copied!";
 
-for btn in document.select(".btn"):
-    if btn.text == "Copy":
-        btn.bind("click", copy_text)
+        setTimeout(() => {
+            ev.target.textContent = "Copy";
+        }, 1000);
+    }
+}
 
-# DROPDOWNS
-def toggle(ev):
-    d = ev.currentTarget.parent
-    d.classList.toggle("open")
+document.querySelectorAll(".btn").forEach(btn => {
+    if (btn.textContent.trim() === "Copy") {
+        btn.addEventListener("click", copyText);
+    }
+});
 
-for h in document.select(".dropdown-header"):
-    h.bind("click", toggle)
 
-# OPEN LINKS
-def openLink(url):
-    window.open(url, "_blank")
+// DROPDOWNS
+function toggle(ev) {
+    const d = ev.currentTarget.parentElement;
+    d.classList.toggle("open");
+}
 
-window.openLink = openLink
+document.querySelectorAll(".dropdown-header").forEach(h => {
+    h.addEventListener("click", toggle);
+});
 
-# SIDEBAR SMART HOVER
-sidebar = document.select_one(".sidebar")
-main = document.select_one(".main")
 
-mouse_on_sidebar = False
+// OPEN LINKS
+function openLink(url) {
+    window.open(url, "_blank");
+}
 
-def enter_sidebar(ev):
-    global mouse_on_sidebar
-    mouse_on_sidebar = True
-    sidebar.classList.add("open")
-    main.classList.add("shift")
+window.openLink = openLink;
 
-def leave_sidebar(ev):
-    global mouse_on_sidebar
-    mouse_on_sidebar = False
 
-def check_mouse(ev):
-    x = ev.clientX
+// SIDEBAR SMART HOVER
+const sidebar = document.querySelector(".sidebar");
+const main = document.querySelector(".main");
 
-    if x < 40 or mouse_on_sidebar:
-        sidebar.classList.add("open")
-        main.classList.add("shift")
-    else:
-        sidebar.classList.remove("open")
-        main.classList.remove("shift")
+let mouseOnSidebar = false;
 
-# Detect hover ON sidebar
-sidebar.bind("mouseenter", enter_sidebar)
-sidebar.bind("mouseleave", leave_sidebar)
+function enterSidebar() {
+    mouseOnSidebar = true;
+    sidebar.classList.add("open");
+    main.classList.add("shift");
+}
 
-# Track mouse globally
-document.bind("mousemove", check_mouse)
+function leaveSidebar() {
+    mouseOnSidebar = false;
+}
+
+function checkMouse(ev) {
+    const x = ev.clientX;
+
+    if (x < 40 || mouseOnSidebar) {
+        sidebar.classList.add("open");
+        main.classList.add("shift");
+    } else {
+        sidebar.classList.remove("open");
+        main.classList.remove("shift");
+    }
+}
+
+// Detect hover ON sidebar
+sidebar.addEventListener("mouseenter", enterSidebar);
+sidebar.addEventListener("mouseleave", leaveSidebar);
+
+// Track mouse globally
+document.addEventListener("mousemove", checkMouse);
 
 </script>
 
